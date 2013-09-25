@@ -1,3 +1,5 @@
+set -e
+
 date=$(date +%Y-%m-%d)
 exportFilename="$date"-videos.json
 echo "$exportFilename"
