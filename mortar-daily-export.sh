@@ -20,7 +20,7 @@ echo "frames returned status $statusFrames"
 echo "users returned status $statusUsers"
 echo "videos returned status $statusVideos"
 
-if [ $statusFrames -eq 0 -a $statusUsers -eq 0 -a $statusVideos -eq 0]
+if [ $statusFrames -eq 0 -a $statusUsers -eq 0 -a $statusVideos -eq 0 ]
 then
   exit 0
 else
