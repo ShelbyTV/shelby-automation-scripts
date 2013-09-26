@@ -1,3 +1,6 @@
+export date=$(date +%Y-%m-%d)
+
+echo "Starting run for $date"
 echo "Starting frames"
 ./frames.sh 1>./frames_export.log 2>&1 &
 pidFrames=$!
