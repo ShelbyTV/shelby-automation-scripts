@@ -25,6 +25,12 @@ echo "videos returned status $statusVideos"
 
 if [ $statusFrames -eq 0 -a $statusUsers -eq 0 -a $statusVideos -eq 0 ]
 then
+  # if we succeed create a file and upload it that signals mortar we completed successfully
+  set -e
+  completionFileName="$date"-complete.txt
+  echo "1" > $completionFileName
+  echo "Uploading completion file"
+  s3cmd --progress put $completionFileName s3://dev-shelby-mortar-share/input/
   exit 0
 else
   exit 1
