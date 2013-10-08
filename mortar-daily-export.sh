@@ -1,6 +1,18 @@
 export date=$(date +%Y-%m-%d)
 
 echo "Starting run for $date"
+
+# cleanup old export folders
+for dir in $(find . -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' -depth 1 -type d)
+do
+  # only remove export files from earlier dates
+  if [ $(basename $dir) \< $date ]
+  then
+    echo "Removing old export folder $dir"
+    bash -c "set -x; rm -rf $dir"
+  fi
+done
+
 export folderForDate="./$date"
 if [ ! -d ${folderForDate} ]
 then
