@@ -3,7 +3,7 @@ export date=$(date +%Y-%m-%d)
 echo "Starting run for $date"
 
 # cleanup old export folders
-for dir in $(find . -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' -depth 1 -type d)
+for dir in $(find . -maxdepth 1 -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' -type d)
 do
   # only remove export files from earlier dates
   if [ $(basename $dir) \< $date ]
@@ -14,6 +14,16 @@ do
 done
 
 export folderForDate="./$date"
+completionFile="$date-complete.txt"
+completionFileFullPath="$folderForDate/$completionFile"
+# if the completion file already exists, we've already run for the current date, so exit
+if [ -e $completionFileFullPath ]
+then
+  echo "Completion file $completionFile already exists"
+  echo "Upload and export for $date already done"
+  exit
+fi
+
 if [ ! -d ${folderForDate} ]
 then
   echo "Creating folder $folderForDate"
@@ -58,8 +68,6 @@ if [ $finalStatus -eq 0 ]
 then
   # if we succeed create a file and upload it that signals mortar we completed successfully
   set -e
-  completionFile="$date-complete.txt"
-  completionFileFullPath="$folderForDate/$completionFile"
   echo "Creating completion file $completionFile"
   echo "1" > $completionFileFullPath
   echo "Uploading completion file $completionFile"
