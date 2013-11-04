@@ -1,8 +1,31 @@
 set -e
 
-collection=${1-"frames"}
+OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
-echo "Collection to export is $collection"
+# argument defaults
+collection="frames"
+method="export" #valid values are "export" and "dump"
+
+while getopts "c:m:" opt; do
+    case "$opt" in
+    c)
+      collection=$OPTARG
+      ;;
+    m)
+      method=$OPTARG
+      if [ "$method" != "export" -a "$method" != "dump" ]
+      then
+        echo "valid values for -m option are export, dump"
+        exit 1
+      fi
+      ;;
+    \?)
+      exit 1
+      ;;
+    esac
+done
+
+echo "Collection to $method is $collection"
 
 # lookup the MongoDB database, host, port and other configuration for the collection
 # being exported
@@ -28,44 +51,79 @@ then
   mkdir "$folderForDate"
 fi
 
-# figure out the paths and filenames of the files we'll be working with
-exportFile=${collection}.json
-exportFileFullPath="$folderForDate/$exportFile"
-uploadCompleteFile=${collection}-upload-complete.txt
-uploadCompleteFileFullPath="$folderForDate/$uploadCompleteFile"
+case "$method" in
+  export)
+    # figure out the paths and filenames of the files we'll be working with
+    exportFile=${collection}.json
+    exportFileFullPath="$folderForDate/$exportFile"
+    # if the export file doesn't already exist, do the export, otherwise go straight to the upload
+    if [ ! -e $exportFileFullPath ]
+    then
+      echo "Export file not created yet, exporting to $exportFile"
+      echo "Executing:"
+      if [ $port != "default" ]
+      then
+        port=":$port"
+      else
+        port=""
+      fi
+      if [ $fields != "default" ]
+      then
+        fields=" -f $fields"
+      else
+        fields=""
+      fi
 
-# if the export file doesn't already exist, do the export, otherwise go straight to the upload
-if [ ! -e $exportFileFullPath ]
-then
-  echo "Export file not created yet, exporting to $exportFile"
-  echo "Executing:"
-  if [ $port != "default" ]
-  then
-    port=":$port"
-  else
-    port=""
-  fi
-  if [ $fields != "default" ]
-  then
-    fields=" -f $fields"
-  else
-    fields=""
-  fi
-  # echo the command to stdout, using a here document to hide the password
-  bash -ci "set -x;mongoexport -u gt_admin -p --authenticationDatabase admin -d $database -c $collection --host $host$port --slaveOk 1 -o $exportFileFullPath$fields" <<FRED
+      # echo the command to stdout, using a here document to hide the password
+      bash -ci "set -x;mongoexport -u gt_admin -p --authenticationDatabase admin -d $database -c $collection --host $host$port --slaveOk 1 -o $exportFileFullPath$fields" <<FRED
 Ov3rt1m3#4#
 FRED
-fi
+    fi
+    ;;
+  dump)
+    dumpFolder="$folderForDate/$database"
+    # if the dump folder doesn't already exist, do the dump, otherwise go straight to the upload
+    if [ ! -d $dumpFolder ]
+    then
+      echo "Dump not created yet, dumping to $dumpFolder"
+      echo "Executing:"
+      if [ $port != "default" ]
+      then
+        port="$port"
+      else
+        port="27017"
+      fi
+      # echo the command to stdout, using a here document to hide the password
+      bash -ci "set -x;mongodump -u iceberg901 -p --authenticationDatabase admin -d $database -c $collection --port $port -o $folderForDate" <<FRED
+iceberg901
+FRED
+    fi
+    ;;
+
+esac
+
+uploadCompleteFile=${collection}-upload-complete.txt
+uploadCompleteFileFullPath="$folderForDate/$uploadCompleteFile"
 # if the upload completion indicator file isn't there, we still need to do the upload
 if [ ! -e $uploadCompleteFileFullPath ]
 then
-  echo "Upload not completed yet, uploading $exportFile"
-  echo "Executing:"
-  # echo the command to stdout
-  bash -c "set -x; s3cmd --progress --multipart-chunk-size-mb=100 put $exportFileFullPath s3://dev-shelby-mortar-share/input/$collection/$date/$collection.json"
+  case "$method" in
+    export)
+      echo "Upload not completed yet, uploading $exportFile"
+      echo "Executing:"
+      # echo the command to stdout
+      bash -c "set -x; s3cmd --progress --multipart-chunk-size-mb=100 put $exportFileFullPath s3://dev-shelby-mortar-share/input/$collection/$date/$collection.json"
+      ;;
+    dump)
+      echo "Upload not completed yet, uploading $database"
+      echo "Executing:"
+      # echo the command to stdout
+      bash -c "set -x; s3cmd --progress --multipart-chunk-size-mb=100 put --recursive $dumpFolder s3://shelby-gt-db-backup/"
+      ;;
+  esac
   # upload completed succesfully, create an indicator file so we know this finished
   echo "Upload complete, creating indicator file $uploadCompleteFile"
   echo "1" > $uploadCompleteFileFullPath
 else
-  echo "Export and upload already complete, skipping"
+  echo "$method and upload already complete, skipping"
 fi

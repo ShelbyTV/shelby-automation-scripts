@@ -37,7 +37,7 @@ for collection in ${collections[@]}
 do
   echo "Starting $collection"
   pidVar="${collection}Pid"
-  ./export-upload.sh ${collection} 1>${folderForDate}/${collection}-export.log 2>&1 &
+  ./export-upload.sh -c ${collection} 1>${folderForDate}/${collection}-export.log 2>&1 &
   export ${pidVar}=$!
 done
 
