@@ -31,7 +31,7 @@ echo "Collection to $method is $collection"
 # being exported
 line=`grep "${collection} .* .* .*" <<EOF
 frames gt-roll-frame gt-db-roll-frame-s0-c default default
-users nos-production nos-db-s0-b 27018 roll_followings,aa,ab,ad,ae,af,ac,ag,as,authentications,nickname,downcase_nickname,current_sign_in_at,last_sign_in_at,bb
+users nos-production nos-db-s0-e 27018 roll_followings,aa,ab,ad,ae,af,ac,ag,as,authentications,nickname,downcase_nickname,current_sign_in_at,last_sign_in_at,bb
 videos gt-video gt-db-video-s0-b default default
 EOF`
 
@@ -89,12 +89,12 @@ FRED
       echo "Executing:"
       if [ $port != "default" ]
       then
-        port="$port"
+        port=":$port"
       else
-        port="27017"
+        port=""
       fi
       # echo the command to stdout, using a here document to hide the password
-      bash -ci "set -x;mongodump -u gt_admin -p --authenticationDatabase admin --port $port --oplog -o $folderForDate" <<FRED
+      bash -ci "set -x;mongodump -u gt_admin -p --authenticationDatabase admin --host $host$port --oplog -o $folderForDate" <<FRED
 Ov3rt1m3#4#
 FRED
     fi
