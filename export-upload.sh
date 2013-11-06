@@ -75,7 +75,7 @@ case "$method" in
       fi
 
       # echo the command to stdout, using a here document to hide the password
-      bash -ci "set -x;mongoexport -u gt_admin -p --authenticationDatabase admin -d $database -c $collection --host $host$port --slaveOk 1 -o $exportFileFullPath$fields" <<FRED
+      bash -c "set -x;mongoexport -u gt_admin -p --authenticationDatabase admin -d $database -c $collection --host $host$port --slaveOk 1 -o $exportFileFullPath$fields" <<FRED
 Ov3rt1m3#4#
 FRED
     fi
@@ -94,7 +94,7 @@ FRED
         port=""
       fi
       # echo the command to stdout, using a here document to hide the password
-      bash -ci "set -x;mongodump -u gt_admin -p --authenticationDatabase admin --host $host$port --oplog -o $folderForDate" <<FRED
+      bash -c "set -x;mongodump -u gt_admin -p --authenticationDatabase admin --host $host$port --oplog -o $folderForDate" <<FRED
 Ov3rt1m3#4#
 FRED
     fi
