@@ -94,8 +94,8 @@ FRED
         port="27017"
       fi
       # echo the command to stdout, using a here document to hide the password
-      bash -ci "set -x;mongodump -u iceberg901 -p --authenticationDatabase admin -d $database -c $collection --port $port -o $folderForDate" <<FRED
-iceberg901
+      bash -ci "set -x;mongodump -u gt_admin -p --authenticationDatabase admin --port $port --oplog -o $folderForDate" <<FRED
+Ov3rt1m3#4#
 FRED
     fi
     ;;
@@ -118,7 +118,7 @@ then
       echo "Upload not completed yet, uploading $database"
       echo "Executing:"
       # echo the command to stdout
-      bash -c "set -x; s3cmd --progress --multipart-chunk-size-mb=100 put --recursive $dumpFolder s3://shelby-gt-db-backup/"
+      bash -c "set -x; s3cmd --progress --multipart-chunk-size-mb=100 put --recursive $dumpFolder s3://shelby-gt-db-backup/$collection/"
       ;;
   esac
   # upload completed succesfully, create an indicator file so we know this finished
