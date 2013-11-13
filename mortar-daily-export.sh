@@ -1,3 +1,7 @@
+#!/bin/bash
+# Script to mongoexport all collections that Mortar needs to run our recommended system,
+#   then upload them to S3
+
 export date=$(date +%Y-%m-%d)
 
 echo "Starting run for $date"
@@ -37,7 +41,7 @@ for collection in ${collections[@]}
 do
   echo "Starting $collection"
   pidVar="${collection}Pid"
-  ./export-upload.sh -c ${collection} 1>${folderForDate}/${collection}-export.log 2>&1 &
+  ./mongo-export-upload.sh -c ${collection} 1>${folderForDate}/${collection}-export.log 2>&1 &
   export ${pidVar}=$!
 done
 

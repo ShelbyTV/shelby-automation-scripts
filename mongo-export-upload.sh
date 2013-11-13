@@ -1,3 +1,8 @@
+#!/bin/bash
+# Based on input parameters, gets the config information necessary to export the specified
+#   mongo collection, then mongoexports or monogdumps it and uploads the resulting file(s)
+#   to s3
+
 set -e
 
 OPTIND=1 # Reset in case getopts has been used previously in the shell.
