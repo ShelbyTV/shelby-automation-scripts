@@ -47,5 +47,8 @@ set -e
 echo "Deleting mount point $mountPoint"
 bash -c "set -x;rmdir $mountPoint"
 
-echo "Uploading compressed backup archive"
+echo "Uploading compressed backup archive to S3"
 bash -c "set -x;s3cmd --progress --multipart-chunk-size-mb=100 put $backupArchiveFile s3://shelby-gt-db-backup/shelbySet/"
+
+echo "Deleting compressed backup archive"
+bash -c "set -x;rm $backupArchiveFile"
