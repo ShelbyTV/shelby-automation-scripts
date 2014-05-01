@@ -40,6 +40,7 @@ dashboard_entries gt-dashboard-entry gt-db-dashboard-s0-b default default
 deeplink_caches gt-deeplink_cache gt-db-deepcache-s0-a default default
 frames gt-roll-frame gt-db-roll-frame-s0-c default default
 users nos-production nos-db-s0-e 27018 roll_followings,aa,ab,ad,ae,af,ac,ag,as,authentications,nickname,downcase_nickname,current_sign_in_at,last_sign_in_at,bb
+user_actions gt-user-action gt-db-user-action-s0-b default default
 videos gt-video gt-db-video-s0-b default default
 EOF`
 
