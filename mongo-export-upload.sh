@@ -92,7 +92,7 @@ FRED
   dump)
     dumpFolder="$folderForDate"
     # if the dump folder doesn't already exist, do the dump, otherwise go straight to the upload
-    if [ ! -d $dumpFolder ]
+    if [ ! "$(ls -A ${folderForDate})" ]
     then
       echo "Dump not created yet, dumping to $dumpFolder"
       echo "Executing:"
