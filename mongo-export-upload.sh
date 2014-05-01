@@ -35,6 +35,9 @@ echo "Collection to $method is $collection"
 # lookup the MongoDB database, host, port and other configuration for the collection
 # being exported
 line=`grep "${collection} .* .* .*" <<EOF
+conversations gt-conversation gt-db-conversation-s0-a default default
+dashboard_entries gt-dashboard-entry gt-db-dashboard-s0-b default default
+deeplink_caches gt-deeplink_cache gt-db-deepcache-s0-a default default
 frames gt-roll-frame gt-db-roll-frame-s0-c default default
 users nos-production nos-db-s0-e 27018 roll_followings,aa,ab,ad,ae,af,ac,ag,as,authentications,nickname,downcase_nickname,current_sign_in_at,last_sign_in_at,bb
 videos gt-video gt-db-video-s0-b default default
@@ -86,7 +89,7 @@ FRED
     fi
     ;;
   dump)
-    dumpFolder="$folderForDate/$database"
+    dumpFolder="$folderForDate"
     # if the dump folder doesn't already exist, do the dump, otherwise go straight to the upload
     if [ ! -d $dumpFolder ]
     then
@@ -99,7 +102,7 @@ FRED
         port=""
       fi
       # echo the command to stdout, using a here document to hide the password
-      bash -c "set -x;mongodump -u gt_admin -p --authenticationDatabase admin --host $host$port --oplog -o $folderForDate" <<FRED
+      bash -c "set -x;mongodump -u gt_admin -p --authenticationDatabase admin --host $host$port --oplog -o $dumpFolder" <<FRED
 Ov3rt1m3#4#
 FRED
     fi
